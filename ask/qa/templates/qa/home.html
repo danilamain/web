@@ -1,0 +1,5 @@
+<ul>
+{% for question in questions %}
+	<li><a href='/question/{{ question.id }}/'>{{ question.title }}</a></li>
+{% endfor %}
+</ul>

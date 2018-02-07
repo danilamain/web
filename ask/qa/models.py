@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class QuestionManager(models.Manager):
     def new(self, *args, **kwargs):
-        return self.order_by('-added_at')
+        return self.order_by('-id')
 
     def popular(self, *args, **kwargs):
         return self.order_by('-likes')

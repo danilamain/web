@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
-from django.core.paginator import Paginator, InvalidPage
-from django.http import HttpResponse
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from models import Question, Answer
 
 # Create your views here.
@@ -15,10 +16,12 @@ def home(request):
 	new_questions = Question.objects.new()
 	paginator = Paginator(new_questions, 10)
 	
-	page = request.GET.get('page')
+	page = request.GET.get('page', 1)
 	try:	
 		questions = paginator.page(page)
-	except InvalidPage:
-		questions = paginator.page(paginator.num_pages)
-	
-	return render(request, 'qa/home.html', {'questions': questions})
+		return render(request, 'qa/home.html', {'questions': questions})
+	except PageNotAnInteger:
+		page = 1
+	except EmptyPage:
+		page = paginator.num_pages
+	return HttpResponseRedirect("%s?page=%s" % (reverse("home"), page))

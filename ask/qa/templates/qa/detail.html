@@ -2,6 +2,12 @@
 <p>{{ question.text }}</p>
 <ul>
 {% for ans in question.answer_set.all %}
-	<li>{{ ans.text }}</li>
+	<hr />
+    <li>{{ ans.text }}</li>
 {% endfor %}
+<form action="{% url 'detail' question.id %}" method='post'>
+{% csrf_token %}
+	{{ form.as_p }}
+<input type="submit" value="Ответить" />
+</form>
 </ul>

@@ -1,5 +1,6 @@
 from django import forms
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 from .models import Question, Answer
 
 
@@ -24,3 +25,19 @@ class AnswerForm(forms.Form):
         answer.author_id = self._user.id
         answer.save()
         return answer
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=100)
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        #error_message = 'Invalid username or password.'
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+        try:
+            user = User.objects.get(username=username)
+            if not user.check_password(password):
+                raise forms.ValidationError('Invalid username or password.')
+        except User.DoesNotExist:
+            raise forms.ValidationError('Invalid username or password.')
+        return self.cleaned_data

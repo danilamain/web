@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from models import Question, Answer
 
-from .forms import AskForm, AnswerForm
+from .forms import AskForm, AnswerForm, LoginForm
 
 # Create your views here.
 def test(request, *args, **kwargs):
@@ -54,3 +54,20 @@ def ask_question(request):
 	else:
 		form = AskForm()
 	return render(request, 'qa/ask.html', {'form': form})
+
+def login(request):
+	if request.method == 'POST':
+		form = LoginForm(request.POST)
+		if form.is_valid():
+			username = request.POST['username']
+			password = request.POST['password']
+			user = authenticate(username=username, password=password)
+			if user is not None:
+				login(request, user)
+				return HttpResponseRedirect('/')
+	else:
+		form = LoginForm()
+	return render(request, 'qa/login.html', { 'form': form,
+												'user': request.user,
+												'session': request.session, })
+

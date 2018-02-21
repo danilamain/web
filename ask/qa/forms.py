@@ -41,3 +41,23 @@ class LoginForm(forms.Form):
         except User.DoesNotExist:
             raise forms.ValidationError('Invalid username or password.')
         return self.cleaned_data
+
+
+class SignupForm(forms.Form):
+    username = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError('User with same "username" already exist.')
+        return username
+
+    def save(self):
+        username = self.cleaned_data.get('username')
+        email = self.cleaned_data.get('email')
+        password = self.cleaned_data.get('password')
+        user = User.objects.create_user(username, email, password)
+        user.save()
+        return user

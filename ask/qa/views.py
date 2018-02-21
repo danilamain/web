@@ -1,11 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib.auth import authenticate, login
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 
 from models import Question, Answer
 
-from .forms import AskForm, AnswerForm, LoginForm
+from .forms import AskForm, AnswerForm, LoginForm, SignupForm
 
 # Create your views here.
 def test(request, *args, **kwargs):
@@ -55,7 +56,7 @@ def ask_question(request):
 		form = AskForm()
 	return render(request, 'qa/ask.html', {'form': form})
 
-def login(request):
+def login_user(request):
 	if request.method == 'POST':
 		form = LoginForm(request.POST)
 		if form.is_valid():
@@ -71,3 +72,12 @@ def login(request):
 												'user': request.user,
 												'session': request.session, })
 
+def signup(request):
+	if request.method == 'POST':
+		form = SignupForm(request.POST)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('/')
+	else:
+		form = SignupForm()
+	return render(request, 'qa/signup.html', {'form': form, })
